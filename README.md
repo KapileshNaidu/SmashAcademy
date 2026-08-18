@@ -59,6 +59,28 @@ npm run db:head-coach -- --email head@academy.com --password 'change-me-please' 
 npm run dev
 ```
 
+## Deploying
+
+`.env.local` is gitignored, so a fresh host has **no** Supabase credentials and
+every route 500s — `proxy.ts` runs on each request and cannot build a client. Set
+all three under Vercel → Settings → Environment Variables:
+
+| Variable | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public by design; RLS is what guards the data |
+| `SUPABASE_SECRET_KEY` | Server-only, bypasses RLS. Never `NEXT_PUBLIC_` |
+
+Copy the values from your local `.env.local`. **Environment changes do not apply
+to an existing build** — redeploy after adding them.
+
+Then point Supabase at the deployed origin, or confirmation links and post-login
+redirects still go to localhost: Authentication → URL Configuration → set **Site
+URL** to your deployed origin and add `<origin>/**` to **Redirect URLs**.
+
+`lib/supabase/env.ts` validates all three at the point of use, so a missing one
+names itself in the logs instead of surfacing as a bare Internal Server Error.
+
 ## How the pieces fit
 
 ### Auth and onboarding

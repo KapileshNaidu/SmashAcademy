@@ -14,15 +14,10 @@ import type { Database } from '@/lib/types/database';
  * mistaken client import into a build error rather than a leaked secret.
  */
 import 'server-only';
+import { supabaseSecretKey, supabaseUrl } from '@/lib/supabase/env';
 
 export function createAdminClient() {
-  const secret = process.env.SUPABASE_SECRET_KEY;
-
-  if (!secret) {
-    throw new Error('SUPABASE_SECRET_KEY is not set — cannot use the admin client.');
-  }
-
-  return createSupabaseClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, secret, {
+  return createSupabaseClient<Database>(supabaseUrl(), supabaseSecretKey(), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }

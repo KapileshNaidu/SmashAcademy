@@ -1,11 +1,12 @@
 import { createBrowserClient } from '@supabase/ssr';
 
 import type { Database } from '@/lib/types/database';
+import { supabasePublishableKey, supabaseUrl } from '@/lib/supabase/env';
 
 /** Browser-side client. Reads the session from the cookies middleware keeps fresh. */
 export function createClient() {
   return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    supabaseUrl(),
+    supabasePublishableKey(),
   );
 }
